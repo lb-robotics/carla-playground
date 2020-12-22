@@ -115,6 +115,11 @@ make launch
 make package
 ```
 
+A working version of CARLA 0.9.10.1 build can be found using this Google Link: https://drive.google.com/file/d/1XYc6xtr0X1xM0U4nHkGW5NnG_O0iSunv/view?usp=sharing. Users can download and extract the `tar` file, and run 
+```bash
+./CarlaUE4.sh
+```
+
 ### Running Examples
 There are a lot of useful examples of CARLA Python API under `~/carla/PythonAPI/examples`. Feel free to check them out!
 
