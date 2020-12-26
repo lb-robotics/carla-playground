@@ -1,7 +1,7 @@
 # CARLA Playground
 This repo serves as a guide to installing and testing *CARLA* & *CARLA ROS Bridge* on Ubuntu 20.04 LTS. 
 
-**This repo itself is an empty ROS package** and can be placed in any Catkin workspace by
+**This repo itself contains several ROS packages** and can be placed in any Catkin workspace by
 ```bash
 mkdir -p ~/catkin_ws/src
 cd ~/catkin_ws/src
