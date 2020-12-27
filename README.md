@@ -20,6 +20,7 @@ catkin_make
     - [Get Assets](#get-assets)
     - [Set Environment Variable](#set-environment-variable)
     - [Building CARLA](#building-carla)
+    - [Some Tweaks on CARLA Window](#some-tweaks-on-carla-window)
     - [Running Examples](#running-examples)
   - [CARLA ROS Bridge 0.9.10.1](#carla-ros-bridge-09101)
   - [References](#references)
@@ -119,6 +120,13 @@ A working version of CARLA 0.9.10.1 build can be found using this Google Link: h
 ```bash
 ./CarlaUE4.sh
 ```
+
+### Some Tweaks on CARLA Window
+1. If CARLA consumes a lot of GPU resources and you would like to set limit on that, you can manually specify window size of CARLA window:
+```bash
+./CarlaUE4.sh -windowed -ResX=1080 -ResY=720
+```
+Thanks [this tutorial](https://silvamfpedro.github.io/thesis-blog/manual.html) for providing this information!
 
 ### Running Examples
 There are a lot of useful examples of CARLA Python API under `~/carla/PythonAPI/examples`. Feel free to check them out!
