@@ -128,6 +128,11 @@ A working version of CARLA 0.9.10.1 build can be found using this Google Link: h
 ```
 Thanks [this tutorial](https://silvamfpedro.github.io/thesis-blog/manual.html) for providing this information!
 
+2. CARLA running in the background can be achieved by this command:
+```bash
+SDL_VIDEODRIVER=offscreen ./CarlaUE4.sh -opengl
+```
+
 ### Running Examples
 There are a lot of useful examples of CARLA Python API under `~/carla/PythonAPI/examples`. Feel free to check them out!
 
