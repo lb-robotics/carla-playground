@@ -13,7 +13,7 @@ catkin_make
 - [CARLA Playground](#carla-playground)
   - [Overview](#overview)
   - [System & Software Requirements](#system--software-requirements)
-  - [Dependencies](#dependencies)
+  - [CARLA Build Dependencies](#carla-build-dependencies)
   - [Unreal Engine 4.24](#unreal-engine-424)
   - [CARLA 0.9.10.1](#carla-09101)
     - [Clone Repository](#clone-repository)
@@ -34,7 +34,7 @@ CARLA is an open-source simulator for autonomous driving research and is still i
 - **CARLA 0.9.10.1, UnrealEngine 4.24, ROS Noetic Ninjemys.** This article will focus on how to compile the current-latest *CARLA 0.9.10.1* along with *UnrealEngine 4.24.*
 - Python 3.8
 
-## Dependencies
+## CARLA Build Dependencies
 [Please refer to the official wiki here.](https://carla.readthedocs.io/en/latest/build_linux/#dependencies)
 
 My experience is a little bit difference from the official wiki. I was not able to find and install Ubuntu Xenial's LLVM tool on 20.04 LTS, and thus I used Ubuntu Focal's default apt repository for `clang-8` installation. What's more, ROS Noetic has removed all support for Python 2, so we don't need to build anything for Python 2 either.
