@@ -68,7 +68,7 @@ void EgoVehicle::restart(carla::client::World &world) {
         ROS_INFO("Spawned %d", p_actor->GetId());
 
         auto p_vehicle = boost::static_pointer_cast<carla::client::Vehicle>(p_actor);
-        _vehicle_ptr = std::make_unique<carla::client::Vehicle>(*p_vehicle);
+        // _vehicle_ptr = std::make_unique<carla::client::Vehicle>(*p_vehicle);
 
         /* Move Spectator in World */
         carla::traffic_manager::ActorPtr p_spectator = world.GetSpectator();
@@ -79,10 +79,10 @@ void EgoVehicle::restart(carla::client::World &world) {
         p_spectator->SetTransform(transform);
     }
 
-    /* Apply control to vehicle */
-    carla::client::Vehicle::Control control;
-    control.throttle = 1.0f;
-    _vehicle_ptr->ApplyControl(control);
+    // /* Apply control to vehicle */
+    // carla::client::Vehicle::Control control;
+    // control.throttle = 1.0f;
+    // _vehicle_ptr->ApplyControl(control);
 }
 
 void EgoVehicle::run() {
