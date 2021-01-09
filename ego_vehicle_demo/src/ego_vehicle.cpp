@@ -42,18 +42,47 @@ EgoVehicle::EgoVehicle(unsigned int rng_seed)
       _clientTimeOut(10s) {
 }
 
-void EgoVehicle::restart(const carla::client::World &world) {
-    /* Ego Vehicle Blueprint Configuration */
-    // Get a random vehicle blueprint
-    auto p_blueprintLibrary = world.GetBlueprintLibrary();
-    auto p_listVehicles = p_blueprintLibrary->Filter("vehicle");
-    auto blueprint = RandomChoice(*p_listVehicles, _rng);
+void EgoVehicle::restart(carla::client::World &world) {
+    // if no vehicle is spawned (1st time in the loop), spawn a vehicle
+    if (_blueprint_ptr == nullptr || _spawn_point_ptr == nullptr || _vehicle_ptr == nullptr) {
+        /* Ego Vehicle Blueprint Configuration */
+        // Get a random vehicle blueprint
+        auto p_blueprintLibrary = world.GetBlueprintLibrary();
+        auto p_listVehicles = p_blueprintLibrary->Filter("vehicle");
+        carla::client::ActorBlueprint blueprint = RandomChoice(*p_listVehicles, _rng);
+        _blueprint_ptr = std::make_unique<carla::client::ActorBlueprint>(blueprint);
 
-    // Randomly config the blueprint
-    if (blueprint.ContainsAttribute("color")) {
-        auto &attribute = blueprint.GetAttribute("color");
-        blueprint.SetAttribute("color", RandomChoice(attribute.GetRecommendedValues(), _rng));
+        // Randomly config the blueprint
+        if (_blueprint_ptr->ContainsAttribute("color")) {
+            auto &attribute = _blueprint_ptr->GetAttribute("color");
+            _blueprint_ptr->SetAttribute("color", RandomChoice(attribute.GetRecommendedValues(), _rng));
+        }
+
+        /* Spawns Ego Vehicle */
+        auto p_map = world.GetMap();
+        carla::geom::Transform transform = RandomChoice(p_map->GetRecommendedSpawnPoints(), _rng);
+        _spawn_point_ptr = std::make_unique<carla::geom::Transform>(transform);
+
+        // spawns `actor`
+        carla::traffic_manager::ActorPtr p_actor = world.SpawnActor(*_blueprint_ptr, transform);
+        ROS_INFO("Spawned %d", p_actor->GetId());
+
+        auto p_vehicle = boost::static_pointer_cast<carla::client::Vehicle>(p_actor);
+        _vehicle_ptr = std::make_unique<carla::client::Vehicle>(*p_vehicle);
+
+        /* Move Spectator in World */
+        carla::traffic_manager::ActorPtr p_spectator = world.GetSpectator();
+        transform.location += 32.0f * transform.GetForwardVector();
+        transform.location.z += 2.0f;
+        transform.rotation.yaw += 180.0f;
+        transform.rotation.pitch = -15.0f;
+        p_spectator->SetTransform(transform);
     }
+
+    /* Apply control to vehicle */
+    carla::client::Vehicle::Control control;
+    control.throttle = 1.0f;
+    _vehicle_ptr->ApplyControl(control);
 }
 
 void EgoVehicle::run() {

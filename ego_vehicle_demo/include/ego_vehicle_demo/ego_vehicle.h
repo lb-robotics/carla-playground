@@ -4,10 +4,15 @@
 #include <carla/client/ActorBlueprint.h>
 #include <carla/client/BlueprintLibrary.h>
 #include <carla/client/Client.h>
+#include <carla/client/Map.h>
+#include <carla/client/Sensor.h>
+#include <carla/client/TimeoutException.h>
 #include <carla/client/World.h>
+#include <carla/geom/Transform.h>
 #include <carla_msgs/CarlaWorldInfo.h>
 #include <ros/ros.h>
 
+#include <memory>
 #include <random>
 #include <stdexcept>
 #include <string>
@@ -24,7 +29,7 @@ public:
     EgoVehicle(unsigned int rng_seed);
 
     // (Re)spawns ego vehicle
-    void restart(const carla::client::World& world);
+    void restart(carla::client::World& world);
 
     // Ego vehicle runner
     void run();
@@ -44,6 +49,9 @@ private:
     uint16_t _port;
     ros::Duration _subscriberTimeOut;
     carla::time_duration _clientTimeOut;
+    std::unique_ptr<carla::client::ActorBlueprint> _blueprint_ptr;
+    std::unique_ptr<carla::geom::Transform> _spawn_point_ptr;
+    std::unique_ptr<carla::client::Vehicle> _vehicle_ptr;
 };
 
 }  // namespace ego_vehicle
