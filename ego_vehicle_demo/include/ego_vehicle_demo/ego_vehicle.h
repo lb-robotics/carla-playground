@@ -25,6 +25,9 @@ public:
     // ROS node handle (for subscribing messages)
     ros::NodeHandle _n;
 
+    // Read-only reference for role name
+    const std::string& role_name;
+
     /**
      * @brief Construct a new Ego Vehicle object with RNG (C++ random number generator) seed 
      * 
@@ -34,6 +37,9 @@ public:
 
     // (Re)spawns ego vehicle
     void restart(carla::client::World& world);
+
+    // Sets up the sensors upon restart
+    void setupSensors(carla::client::World& world);
 
     // Ego vehicle runner
     void run();
@@ -52,6 +58,7 @@ private:
     std::mt19937_64 _rng;
 
     // CARLA utilities (host, port, timeout)
+    std::string _role_name;
     std::string _host;
     uint16_t _port;
     ros::Duration _subscriberTimeOut;
@@ -60,7 +67,10 @@ private:
     // CARLA Class Pointers
     carla::geom::Transform _spawn_point;
     boost::shared_ptr<carla::client::Vehicle> _vehicle_ptr;
-    boost::shared_ptr<carla::client::Sensor> _camera_ptr;
+    boost::shared_ptr<carla::client::Sensor> _camera_rgb_ptr;
+    boost::shared_ptr<carla::client::Sensor> _camera_seg_ptr;
+    boost::shared_ptr<carla::client::Sensor> _camera_depth_ptr;
+    boost::shared_ptr<carla::client::Sensor> _lidar_ptr;
     carla::client::Vehicle::Control _control;
 };
 

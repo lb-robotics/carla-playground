@@ -20,7 +20,11 @@ int main(int argc, char** argv) {
         ros::shutdown();
     }
 
-    ros::spin();
+    while (ros::ok()) {
+        ros::spinOnce();
+    }
+
+    vehicle.destroy();
 
     return 0;
 }

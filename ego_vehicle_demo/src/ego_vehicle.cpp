@@ -34,15 +34,20 @@ static auto &RandomChoice(const RangeT &range, RNG &&generator) {
 namespace ego_vehicle {
 
 EgoVehicle::EgoVehicle(unsigned int rng_seed)
-    : _rng(rng_seed),
-      _n(),
+    : _n(),
+      role_name(_role_name),
+      _rng(rng_seed),
+      _role_name("ego_vehicle"),
       _host("localhost"),
       _port(2000u),
       _subscriberTimeOut(1.0),
       _clientTimeOut(10s),
       _spawn_point(),
       _vehicle_ptr(),
-      _camera_ptr(),
+      _camera_rgb_ptr(),
+      _camera_seg_ptr(),
+      _camera_depth_ptr(),
+      _lidar_ptr(),
       _control() {
     _control.throttle = 1.0f;
 }
@@ -52,9 +57,17 @@ void EgoVehicle::destroy() {
         _vehicle_ptr->Destroy();
         ROS_INFO("Destroyed vehicle on exit");
     }
-    if (_camera_ptr != nullptr) {
-        _camera_ptr->Destroy();
-        ROS_INFO("Destroyed camera on exit");
+    if (_camera_rgb_ptr != nullptr) {
+        _camera_rgb_ptr->Destroy();
+        ROS_INFO("Destroyed RGB camera on exit");
+    }
+    if (_camera_seg_ptr != nullptr) {
+        _camera_seg_ptr->Destroy();
+        ROS_INFO("Destroyed segmentation camera on exit");
+    }
+    if (_camera_depth_ptr != nullptr) {
+        _camera_depth_ptr->Destroy();
+        ROS_INFO("Destroyed depth camera on exit");
     }
 }
 
@@ -70,6 +83,9 @@ void EgoVehicle::restart(carla::client::World &world) {
         auto &attribute = blueprint.GetAttribute("color");
         blueprint.SetAttribute("color", RandomChoice(attribute.GetRecommendedValues(), _rng));
     }
+    if (blueprint.ContainsAttribute("role_name")) {
+        blueprint.SetAttribute("role_name", _role_name);
+    }
 
     /* Spawns Ego Vehicle */
     auto p_map = world.GetMap();
@@ -78,7 +94,7 @@ void EgoVehicle::restart(carla::client::World &world) {
 
     // spawns `actor`
     carla::traffic_manager::ActorPtr p_actor = world.SpawnActor(blueprint, transform);
-    ROS_INFO("Spawned %d", p_actor->GetId());
+    ROS_INFO("Spawned %s", _role_name.c_str());
 
     _vehicle_ptr = boost::static_pointer_cast<carla::client::Vehicle>(p_actor);
 
@@ -90,18 +106,63 @@ void EgoVehicle::restart(carla::client::World &world) {
     transform.rotation.pitch = -15.0f;
     p_spectator->SetTransform(transform);
 
-    /* Spawns Camera attached to ego vehicle */
-    auto p_cameraBlueprint = p_blueprintLibrary->Find("sensor.camera.rgb");
-    EXPECT_TRUE(p_cameraBlueprint != nullptr);
-    carla::geom::Transform cameraTransform = carla::geom::Transform(
-        carla::geom::Location(-5.5f, 0.f, 2.8f),  // x,y,z
-        carla::geom::Rotation(-15.0f, 0.f, 0.f)   // pitch, roll, yaw
-    );
-    carla::client::ActorPtr cameraActor = world.SpawnActor(*p_cameraBlueprint, cameraTransform, _vehicle_ptr.get());
-    _camera_ptr = boost::static_pointer_cast<carla::client::Sensor>(cameraActor);
+    this->setupSensors(world);
 
     /* Apply control to vehicle */
     _vehicle_ptr->ApplyControl(_control);
+}
+
+void EgoVehicle::setupSensors(carla::client::World &world) {
+    auto p_blueprintLibrary = world.GetBlueprintLibrary();
+    /* Spawns Front RGB Camera */
+    auto p_listCameras = p_blueprintLibrary->Filter("sensor.camera.rgb");
+    carla::client::ActorBlueprint cameraRGBBlueprint = RandomChoice(*p_listCameras, _rng);
+    if (cameraRGBBlueprint.ContainsAttribute("role_name"))
+        cameraRGBBlueprint.SetAttribute("role_name", "front");
+
+    carla::geom::Transform cameraRGBTransform = carla::geom::Transform(
+        carla::geom::Location(2.0f, 0.0f, 2.0f),  // x,y,z
+        carla::geom::Rotation(0.0f, 0.0f, 0.0f)   // pitch, roll, yaw
+    );
+    carla::client::ActorPtr cameraRGBActor = world.SpawnActor(cameraRGBBlueprint, cameraRGBTransform, _vehicle_ptr.get());
+    _camera_rgb_ptr = boost::static_pointer_cast<carla::client::Sensor>(cameraRGBActor);
+
+    /* Spawns Front Semantic Segmentation Camera */
+    p_listCameras = p_blueprintLibrary->Filter("sensor.camera.semantic_segmentation");
+    carla::client::ActorBlueprint cameraSegBlueprint = RandomChoice(*p_listCameras, _rng);
+    if (cameraSegBlueprint.ContainsAttribute("role_name"))
+        cameraSegBlueprint.SetAttribute("role_name", "front");
+
+    carla::geom::Transform cameraSegTransform = carla::geom::Transform(
+        carla::geom::Location(2.0f, 0.0f, 2.0f),  // x,y,z
+        carla::geom::Rotation(0.0f, 0.0f, 0.0f)   // pitch, roll, yaw
+    );
+    carla::client::ActorPtr cameraSegActor = world.SpawnActor(cameraSegBlueprint, cameraSegTransform, _vehicle_ptr.get());
+    _camera_seg_ptr = boost::static_pointer_cast<carla::client::Sensor>(cameraSegActor);
+
+    /* Spawns Front Depth Camera */
+    p_listCameras = p_blueprintLibrary->Filter("sensor.camera.depth");
+    carla::client::ActorBlueprint cameraDepthBlueprint = RandomChoice(*p_listCameras, _rng);
+    if (cameraDepthBlueprint.ContainsAttribute("role_name"))
+        cameraDepthBlueprint.SetAttribute("role_name", "front");
+
+    carla::geom::Transform cameraDepthTransform = carla::geom::Transform(
+        carla::geom::Location(2.0f, 0.0f, 2.0f),  // x,y,z
+        carla::geom::Rotation(0.0f, 0.0f, 0.0f)   // pitch, roll, yaw
+    );
+    carla::client::ActorPtr cameraDepthActor = world.SpawnActor(cameraDepthBlueprint, cameraDepthTransform, _vehicle_ptr.get());
+    _camera_depth_ptr = boost::static_pointer_cast<carla::client::Sensor>(cameraDepthActor);
+
+    /* Spawns Lidar */
+    auto p_listLidar = p_blueprintLibrary->Filter("sensor.lidar.ray_cast");
+    carla::client::ActorBlueprint lidarBlueprint = RandomChoice(*p_listLidar, _rng);
+    if (lidarBlueprint.ContainsAttribute("role_name"))
+        lidarBlueprint.SetAttribute("role_name", "lidar0");
+    carla::geom::Transform lidarTransform = carla::geom::Transform(
+        carla::geom::Location(0.f, 0.f, 2.4f),
+        carla::geom::Rotation(0.f, 0.f, 0.f));
+    carla::client::ActorPtr lidarActor = world.SpawnActor(lidarBlueprint, lidarTransform, _vehicle_ptr.get());
+    _lidar_ptr = boost::static_pointer_cast<carla::client::Sensor>(lidarActor);
 }
 
 void EgoVehicle::run() {
