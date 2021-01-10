@@ -1,7 +1,7 @@
 # CARLA Playground
 This repo serves as a guide to installing and testing *CARLA* & *CARLA ROS Bridge* on Ubuntu 20.04 LTS. 
 
-**This repo itself contains several ROS packages** and can be placed in any Catkin workspace by
+1. **This repo itself contains several ROS packages** and can be placed in any Catkin workspace by
 ```bash
 mkdir -p ~/catkin_ws/src
 cd ~/catkin_ws/src
@@ -9,6 +9,14 @@ git clone git@github.com:lb-robotics/carla-playground.git
 cd ..
 catkin_make
 ```
+
+2. **This repo depends on self-developed LibCarla (CARLA C++ libraries, details see [here](https://github.com/lb-robotics/libcarla).**
+3. Due to the CMake structure of LibCarla, this repo can only be built wth `catkin_tools 0.5.0` with a proper **install space**:
+```bash
+catkin config --install
+```
+
+
 
 - [CARLA Playground](#carla-playground)
   - [Overview](#overview)
