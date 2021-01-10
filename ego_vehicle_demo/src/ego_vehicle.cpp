@@ -52,6 +52,10 @@ void EgoVehicle::destroy() {
         _vehicle_ptr->Destroy();
         ROS_INFO("Destroyed vehicle on exit");
     }
+    if (_camera_ptr != nullptr) {
+        _camera_ptr->Destroy();
+        ROS_INFO("Destroyed camera on exit");
+    }
 }
 
 void EgoVehicle::restart(carla::client::World &world) {
