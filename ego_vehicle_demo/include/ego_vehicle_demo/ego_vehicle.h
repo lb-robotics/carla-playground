@@ -56,6 +56,7 @@ private:
     // CARLA Class Pointers
     carla::geom::Transform _spawn_point;
     boost::shared_ptr<carla::client::Vehicle> _vehicle_ptr;
+    boost::shared_ptr<carla::client::Sensor> _camera_ptr;
     carla::client::Vehicle::Control _control;
 };
 

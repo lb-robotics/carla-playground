@@ -42,6 +42,7 @@ EgoVehicle::EgoVehicle(unsigned int rng_seed)
       _clientTimeOut(10s),
       _spawn_point(),
       _vehicle_ptr(),
+      _camera_ptr(),
       _control() {
     _control.throttle = 1.0f;
 }
@@ -86,6 +87,16 @@ void EgoVehicle::restart(carla::client::World &world) {
         transform.rotation.yaw += 180.0f;
         transform.rotation.pitch = -15.0f;
         p_spectator->SetTransform(transform);
+
+        /* Spawns Camera attached to ego vehicle */
+        auto p_cameraBlueprint = p_blueprintLibrary->Find("sensor.camera.rgb");
+        EXPECT_TRUE(p_cameraBlueprint != nullptr);
+        carla::geom::Transform cameraTransform = carla::geom::Transform(
+            carla::geom::Location(-5.5f, 0.f, 2.8f),  // x,y,z
+            carla::geom::Rotation(-15.0f, 0.f, 0.f)   // pitch, roll, yaw
+        );
+        carla::client::ActorPtr cameraActor = world.SpawnActor(*p_cameraBlueprint, cameraTransform, _vehicle_ptr.get());
+        _camera_ptr = boost::static_pointer_cast<carla::client::Sensor>(cameraActor);
     }
 
     /* Apply control to vehicle */
