@@ -8,6 +8,11 @@ int main(int argc, char** argv) {
 
     ego_vehicle::EgoVehicle vehicle((std::random_device())());
 
+    ros::Subscriber control_subscriber = vehicle._n.subscribe("/carla/ego_vehicle/vehicle_control_cmd",
+                                                              1000,
+                                                              &ego_vehicle::EgoVehicle::callback_egoVehicleControl,
+                                                              &vehicle);
+
     try {
         vehicle.run();
     } catch (const ros::Exception& e) {

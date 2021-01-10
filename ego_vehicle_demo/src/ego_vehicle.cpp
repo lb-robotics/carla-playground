@@ -124,4 +124,16 @@ void EgoVehicle::run() {
     this->restart(world);
 }
 
+void EgoVehicle::callback_egoVehicleControl(const carla_msgs::CarlaEgoVehicleControl &control_msg) {
+    _control.throttle = control_msg.throttle;
+    _control.steer = control_msg.steer;
+    _control.brake = control_msg.brake;
+    _control.hand_brake = control_msg.hand_brake;
+    _control.reverse = control_msg.reverse;
+    _control.gear = control_msg.gear;
+    _control.manual_gear_shift = control_msg.manual_gear_shift;
+
+    _vehicle_ptr->ApplyControl(_control);
+}
+
 }  // namespace ego_vehicle

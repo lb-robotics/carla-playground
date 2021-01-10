@@ -9,6 +9,7 @@
 #include <carla/client/TimeoutException.h>
 #include <carla/client/World.h>
 #include <carla/geom/Transform.h>
+#include <carla_msgs/CarlaEgoVehicleControl.h>
 #include <carla_msgs/CarlaWorldInfo.h>
 #include <ros/ros.h>
 
@@ -21,6 +22,9 @@ namespace ego_vehicle {
 
 class EgoVehicle {
 public:
+    // ROS node handle (for subscribing messages)
+    ros::NodeHandle _n;
+
     /**
      * @brief Construct a new Ego Vehicle object with RNG (C++ random number generator) seed 
      * 
@@ -37,15 +41,15 @@ public:
     // Ego vehicle destroyer on node exit
     void destroy();
 
+    // Subscriber handler
+    void callback_egoVehicleControl(const carla_msgs::CarlaEgoVehicleControl& control_msg);
+
 private:
     // Mersenne Twister 19937 generator (64 bit)
     //  Details see: https://www.cplusplus.com/reference/random/mt19937_64/
     //  Referenced at: cpp_client_demo/demo_main.cpp:69
     //
     std::mt19937_64 _rng;
-
-    // ROS node handle (for subscribing messages)
-    ros::NodeHandle _n;
 
     // CARLA utilities (host, port, timeout)
     std::string _host;
