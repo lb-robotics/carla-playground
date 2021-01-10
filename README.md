@@ -7,10 +7,13 @@ mkdir -p ~/catkin_ws/src
 cd ~/catkin_ws/src
 git clone git@github.com:lb-robotics/carla-playground.git
 cd ..
-catkin_make
+catkin init
+catkin config --install
+catkin build
 ```
+Notice that **the use of `catkin_tools` is necessary to build the workspace.**
 
-2. **This repo depends on self-developed LibCarla (CARLA C++ libraries, details see [here](https://github.com/lb-robotics/libcarla).**
+2. **This repo depends on self-developed LibCarla (CARLA C++ libraries, details see [here](https://github.com/lb-robotics/libcarla)).**
 3. Due to the CMake structure of LibCarla, this repo can only be built wth `catkin_tools 0.5.0` with a proper **install space**:
 ```bash
 catkin config --install
