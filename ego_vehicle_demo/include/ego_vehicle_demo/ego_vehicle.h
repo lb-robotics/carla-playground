@@ -34,6 +34,9 @@ public:
     // Ego vehicle runner
     void run();
 
+    // Ego vehicle destroyer on node exit
+    void destroy();
+
 private:
     // Mersenne Twister 19937 generator (64 bit)
     //  Details see: https://www.cplusplus.com/reference/random/mt19937_64/

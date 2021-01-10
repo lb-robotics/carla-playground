@@ -46,6 +46,13 @@ EgoVehicle::EgoVehicle(unsigned int rng_seed)
     _control.throttle = 1.0f;
 }
 
+void EgoVehicle::destroy() {
+    if (_vehicle_ptr != nullptr) {
+        _vehicle_ptr->Destroy();
+        ROS_INFO("Destroyed vehicle on exit");
+    }
+}
+
 void EgoVehicle::restart(carla::client::World &world) {
     // if no vehicle is spawned (1st time in the loop), spawn a vehicle
     if (_vehicle_ptr == nullptr) {
