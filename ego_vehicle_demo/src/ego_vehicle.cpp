@@ -59,49 +59,46 @@ void EgoVehicle::destroy() {
 }
 
 void EgoVehicle::restart(carla::client::World &world) {
-    // if no vehicle is spawned (1st time in the loop), spawn a vehicle
-    if (_vehicle_ptr == nullptr) {
-        /* Ego Vehicle Blueprint Configuration */
-        // Get a random vehicle blueprint
-        auto p_blueprintLibrary = world.GetBlueprintLibrary();
-        auto p_listVehicles = p_blueprintLibrary->Filter("vehicle");
-        carla::client::ActorBlueprint blueprint = RandomChoice(*p_listVehicles, _rng);
+    /* Ego Vehicle Blueprint Configuration */
+    // Get a random vehicle blueprint
+    auto p_blueprintLibrary = world.GetBlueprintLibrary();
+    auto p_listVehicles = p_blueprintLibrary->Filter("vehicle");
+    carla::client::ActorBlueprint blueprint = RandomChoice(*p_listVehicles, _rng);
 
-        // Randomly config the blueprint
-        if (blueprint.ContainsAttribute("color")) {
-            auto &attribute = blueprint.GetAttribute("color");
-            blueprint.SetAttribute("color", RandomChoice(attribute.GetRecommendedValues(), _rng));
-        }
-
-        /* Spawns Ego Vehicle */
-        auto p_map = world.GetMap();
-        carla::geom::Transform transform = RandomChoice(p_map->GetRecommendedSpawnPoints(), _rng);
-        _spawn_point = transform;
-
-        // spawns `actor`
-        carla::traffic_manager::ActorPtr p_actor = world.SpawnActor(blueprint, transform);
-        ROS_INFO("Spawned %d", p_actor->GetId());
-
-        _vehicle_ptr = boost::static_pointer_cast<carla::client::Vehicle>(p_actor);
-
-        /* Move Spectator in World */
-        carla::traffic_manager::ActorPtr p_spectator = world.GetSpectator();
-        transform.location += 32.0f * transform.GetForwardVector();
-        transform.location.z += 2.0f;
-        transform.rotation.yaw += 180.0f;
-        transform.rotation.pitch = -15.0f;
-        p_spectator->SetTransform(transform);
-
-        /* Spawns Camera attached to ego vehicle */
-        auto p_cameraBlueprint = p_blueprintLibrary->Find("sensor.camera.rgb");
-        EXPECT_TRUE(p_cameraBlueprint != nullptr);
-        carla::geom::Transform cameraTransform = carla::geom::Transform(
-            carla::geom::Location(-5.5f, 0.f, 2.8f),  // x,y,z
-            carla::geom::Rotation(-15.0f, 0.f, 0.f)   // pitch, roll, yaw
-        );
-        carla::client::ActorPtr cameraActor = world.SpawnActor(*p_cameraBlueprint, cameraTransform, _vehicle_ptr.get());
-        _camera_ptr = boost::static_pointer_cast<carla::client::Sensor>(cameraActor);
+    // Randomly config the blueprint
+    if (blueprint.ContainsAttribute("color")) {
+        auto &attribute = blueprint.GetAttribute("color");
+        blueprint.SetAttribute("color", RandomChoice(attribute.GetRecommendedValues(), _rng));
     }
+
+    /* Spawns Ego Vehicle */
+    auto p_map = world.GetMap();
+    carla::geom::Transform transform = RandomChoice(p_map->GetRecommendedSpawnPoints(), _rng);
+    _spawn_point = transform;
+
+    // spawns `actor`
+    carla::traffic_manager::ActorPtr p_actor = world.SpawnActor(blueprint, transform);
+    ROS_INFO("Spawned %d", p_actor->GetId());
+
+    _vehicle_ptr = boost::static_pointer_cast<carla::client::Vehicle>(p_actor);
+
+    /* Move Spectator in World */
+    carla::traffic_manager::ActorPtr p_spectator = world.GetSpectator();
+    transform.location += 32.0f * transform.GetForwardVector();
+    transform.location.z += 2.0f;
+    transform.rotation.yaw += 180.0f;
+    transform.rotation.pitch = -15.0f;
+    p_spectator->SetTransform(transform);
+
+    /* Spawns Camera attached to ego vehicle */
+    auto p_cameraBlueprint = p_blueprintLibrary->Find("sensor.camera.rgb");
+    EXPECT_TRUE(p_cameraBlueprint != nullptr);
+    carla::geom::Transform cameraTransform = carla::geom::Transform(
+        carla::geom::Location(-5.5f, 0.f, 2.8f),  // x,y,z
+        carla::geom::Rotation(-15.0f, 0.f, 0.f)   // pitch, roll, yaw
+    );
+    carla::client::ActorPtr cameraActor = world.SpawnActor(*p_cameraBlueprint, cameraTransform, _vehicle_ptr.get());
+    _camera_ptr = boost::static_pointer_cast<carla::client::Sensor>(cameraActor);
 
     /* Apply control to vehicle */
     _vehicle_ptr->ApplyControl(_control);
