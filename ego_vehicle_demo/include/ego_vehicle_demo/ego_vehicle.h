@@ -49,9 +49,11 @@ private:
     uint16_t _port;
     ros::Duration _subscriberTimeOut;
     carla::time_duration _clientTimeOut;
-    std::unique_ptr<carla::client::ActorBlueprint> _blueprint_ptr;
-    std::unique_ptr<carla::geom::Transform> _spawn_point_ptr;
-    std::unique_ptr<carla::client::Vehicle> _vehicle_ptr;
+
+    // CARLA Class Pointers
+    carla::geom::Transform _spawn_point;
+    boost::shared_ptr<carla::client::Vehicle> _vehicle_ptr;
+    carla::client::Vehicle::Control _control;
 };
 
 }  // namespace ego_vehicle

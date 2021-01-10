@@ -8,16 +8,14 @@ int main(int argc, char** argv) {
 
     ego_vehicle::EgoVehicle vehicle((std::random_device())());
 
-    while (ros::ok()) {
-        try {
-            vehicle.run();
-        } catch (const ros::Exception& e) {
-            ROS_FATAL("%s", e.what());
-            ros::shutdown();
-        }
-
-        ros::spinOnce();
+    try {
+        vehicle.run();
+    } catch (const ros::Exception& e) {
+        ROS_FATAL("%s", e.what());
+        ros::shutdown();
     }
+
+    ros::spin();
 
     return 0;
 }
