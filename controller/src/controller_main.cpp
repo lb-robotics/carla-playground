@@ -8,7 +8,7 @@
 int main(int argc, char** argv) {
     ros::init(argc, argv, "controller");
 
-    controller::Controller vehicle_controller();
+    controller::Controller vehicle_controller;
 
     ros::Rate loop_rate(10);
 
