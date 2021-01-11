@@ -19,10 +19,11 @@ void Controller::calculate() {
 }
 
 void Controller::callback_egoVehicleControl(const controller::control_info &sensor_msg) {
-    sensor_info.velocity = sensor_msg.velocity;
-    sensor_info.acceleration = sensor_msg.acceleration;
-    sensor_info.orientation = sensor_msg.orientation;
-    sensor_info.prev_distance = sensor_msg.prev_distance;
+    // sensor_info.velocity = sensor_msg.velocity;
+    // sensor_info.acceleration = sensor_msg.acceleration;
+    // sensor_info.orientation = sensor_msg.orientation;
+    // sensor_info.prev_distance = sensor_msg.prev_distance;
+    sensor_info = sensor_msg;
 }
 
 carla_msgs::CarlaEgoVehicleControl Controller::get_msg() {
