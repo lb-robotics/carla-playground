@@ -8,9 +8,10 @@ project(slam_demo)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  carla_msgs
+  sensor_msgs
+  nav_msgs
   geometry_msgs
-  libcarla
+  pcl_ros
   roscpp
   tf
 )
@@ -72,7 +73,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate added messages and services with any dependencies listed here
 # generate_messages(
 #   DEPENDENCIES
-#   carla_msgs#   geometry_msgs
+#   sensor_msgs#   geometry_msgs
 # )
 
 ################################################
@@ -107,7 +108,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
  INCLUDE_DIRS include
 #  LIBRARIES slam_demo
- CATKIN_DEPENDS carla_msgs geometry_msgs libcarla roscpp tf
+ CATKIN_DEPENDS sensor_msgs nav_msgs geometry_msgs pcl_ros roscpp tf
 #  DEPENDS system_lib
 )
 
@@ -152,20 +153,20 @@ add_executable(slam_demo src/slam_main.cpp)
 # target_link_libraries(${PROJECT_NAME}_node
 #   ${catkin_LIBRARIES}
 # )
-target_link_directories(slam_demo PRIVATE
-  ${CMAKE_INSTALL_PREFIX}/lib
-)
+# target_link_directories(slam_demo PRIVATE
+#   ${CMAKE_INSTALL_PREFIX}/lib
+# )
 target_link_libraries(slam_demo
   ${catkin_LIBRARIES}
-  carla_client
-  rpc
-  boost_filesystem
-  png
-  tiff
-  jpeg
-  Recast
-  Detour
-  DetourCrowd
+  # carla_client
+  # rpc
+  # boost_filesystem
+  # png
+  # tiff
+  # jpeg
+  # Recast
+  # Detour
+  # DetourCrowd
 )
 
 #############
