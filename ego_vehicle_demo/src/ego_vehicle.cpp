@@ -49,7 +49,7 @@ EgoVehicle::EgoVehicle(unsigned int rng_seed)
       _camera_depth_ptr(),
       _lidar_ptr(),
       _control() {
-    _control.throttle = 1.0f;
+    // _control.throttle = 1.0f;
 }
 
 void EgoVehicle::destroy() {
