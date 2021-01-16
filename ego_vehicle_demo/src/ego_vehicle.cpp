@@ -16,8 +16,8 @@ namespace {
 /**
  * @brief Picks a random element from a container list
  *      The container list must overload operator[]
- * 
- * @tparam RangeT:      container list type 
+ *
+ * @tparam RangeT:      container list type
  * @tparam RNG:         random number generator type
  * @param range:        container list (iterable, operator[] overloaded)
  * @param generator:    random number generator
@@ -187,6 +187,8 @@ void EgoVehicle::run() {
 }
 
 void EgoVehicle::callback_egoVehicleControl(const carla_msgs::CarlaEgoVehicleControl &control_msg) {
+    ROS_INFO("received vehicle_control_cmd");
+
     _control.throttle = control_msg.throttle;
     _control.steer = control_msg.steer;
     _control.brake = control_msg.brake;
