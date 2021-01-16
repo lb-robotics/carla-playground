@@ -106,7 +106,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
- INCLUDE_DIRS include
+# INCLUDE_DIRS include
 #  LIBRARIES slam_demo
  CATKIN_DEPENDS sensor_msgs nav_msgs geometry_msgs pcl_ros roscpp tf
 #  DEPENDS system_lib
